@@ -7,6 +7,11 @@
 
 [中文](README_ZH.md)
 
+<div align="center">
+  <img src="assets/labelvla_ui.png" width="90%">
+  <p><i>LabelVLA annotation interface</i></p>
+</div>
+
 ## Why LabelVLA?
 
 VLA (Vision-Language-Action) is a vision-centric paradigm for robotic manipulation tasks. Unlike traditional image/video annotation, VLA data has unique characteristics:

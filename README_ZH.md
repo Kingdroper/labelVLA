@@ -7,6 +7,11 @@
 
 [English](README.md)
 
+<div align="center">
+  <img src="assets/labelvla_ui.png" width="90%">
+  <p><i>LabelVLA 标注界面</i></p>
+</div>
+
 ## 为什么需要 LabelVLA？
 
 VLA（Vision-Language-Action）是以视觉为中心的机器人操作任务范式。与传统的图像/视频标注不同，VLA 数据具有以下特点：
