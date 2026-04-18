@@ -45,6 +45,9 @@ dynamic = ["readme", "version"]
 content-type = "text/markdown"
 fragments = [{ path = "README.md" }]
 
+[tool.hatch.build.targets.wheel]
+packages = ["labelme"]
+
 [tool.hatch.version]
 source = "vcs"
 fallback-version = "0.1.0"
