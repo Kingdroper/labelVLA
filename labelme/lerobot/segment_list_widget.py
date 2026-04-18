@@ -217,7 +217,7 @@ class SegmentListWidget(QtWidgets.QWidget):
             if bbox.keypoints:
                 status = f" [moving: {len(bbox.keypoints)} keypoints]"
             self._bbox_list.addItem(
-                f'{bbox.label} ({bbox.width:.0f}x{bbox.height:.0f}){status}'
+                f'[id:{bbox.id}] {bbox.label} ({bbox.width:.0f}x{bbox.height:.0f}){status}'
             )
 
     def _on_seg_row_changed(self, row: int) -> None:

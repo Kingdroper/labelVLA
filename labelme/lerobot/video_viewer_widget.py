@@ -162,7 +162,7 @@ class _HeadCameraWidget(QtWidgets.QWidget):
             suffix = " [tracking]" if is_selected else (" [moving]" if bbox.keypoints else "")
             painter.drawText(
                 draw_rect.topLeft() + QtCore.QPointF(2, -3),
-                bbox.label + suffix,
+                f"[{bbox.id}] {bbox.label}{suffix}",
             )
 
         # Draw motion path for the tracked bbox

@@ -16,6 +16,15 @@ class MotionKeypoint:
     cy: float  # center y at this frame
 
 
+_next_bbox_id: int = 0
+
+
+def _gen_bbox_id() -> int:
+    global _next_bbox_id  # noqa: PLW0603
+    _next_bbox_id += 1
+    return _next_bbox_id
+
+
 @dataclass
 class BBox:
     x: float
@@ -23,6 +32,10 @@ class BBox:
     width: float
     height: float
     label: str
+    # Unique identifier for this bbox within the dataset.
+    # Static and moving bboxes each keep the same id across all frames
+    # in their segment.
+    id: int = field(default_factory=_gen_bbox_id)
     # Motion keypoints for moving objects within a segment.
     # If empty, the bbox is static across the segment.
     # If non-empty, the center is interpolated per frame.
@@ -111,6 +124,8 @@ class SegmentStore:
 
     def load(self) -> list[Segment]:
         """Load segments from JSON file. Returns empty list if not found."""
+        global _next_bbox_id  # noqa: PLW0603
+
         if not self.file_path.is_file():
             self._segments = []
             return self._segments
@@ -118,11 +133,14 @@ class SegmentStore:
         with open(self.file_path, encoding="utf-8") as f:
             data = json.load(f)
 
+        max_id = 0
         self._segments = []
         for seg_data in data.get("segments", []):
             bboxes = []
             for b in seg_data.get("bboxes", []):
                 kps = [MotionKeypoint(**k) for k in b.get("keypoints", [])]
+                bbox_id = b.get("id", _gen_bbox_id())
+                max_id = max(max_id, bbox_id)
                 bboxes.append(
                     BBox(
                         x=b["x"],
@@ -130,6 +148,7 @@ class SegmentStore:
                         width=b["width"],
                         height=b["height"],
                         label=b["label"],
+                        id=bbox_id,
                         keypoints=kps,
                     )
                 )
@@ -141,6 +160,8 @@ class SegmentStore:
                     bboxes=bboxes,
                 )
             )
+        # Ensure future ids don't collide with loaded ones
+        _next_bbox_id = max(max_id, _next_bbox_id)
         return self._segments
 
     def save(self, segments: list[Segment] | None = None) -> None:
