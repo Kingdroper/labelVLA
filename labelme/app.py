@@ -148,6 +148,7 @@ class _Actions(NamedTuple):
     show_all: QtWidgets.QAction
     toggle_all: QtWidgets.QAction
     open_dir: QtWidgets.QAction
+    open_lerobot: QtWidgets.QAction
     zoom_widget_action: QtWidgets.QWidgetAction
     draw: list[tuple[str, QtWidgets.QAction]]
     zoom: tuple[ZoomWidget | QtWidgets.QAction, ...]
@@ -354,6 +355,12 @@ class MainWindow(QtWidgets.QMainWindow):
             shortcut=shortcuts["open_dir"],
             icon="phosphor/folder-open.svg",
             tip=self.tr("Open Dir"),
+        )
+        open_lerobot = action(
+            text=self.tr("LeRobot"),
+            slot=self._open_lerobot_with_dialog,
+            icon="phosphor/folder-open.svg",
+            tip=self.tr("Open LeRobot dataset folder"),
         )
         close = action(
             text=self.tr("&Close"),
@@ -768,6 +775,7 @@ class MainWindow(QtWidgets.QMainWindow):
             show_all=show_all,
             toggle_all=toggle_all,
             open_dir=open_dir,
+            open_lerobot=open_lerobot,
             zoom_widget_action=zoom_widget_action,
             draw=draw,
             zoom=zoom,
@@ -819,6 +827,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self._actions.open_next_img,
                 self._actions.open_prev_img,
                 self._actions.open_dir,
+                self._actions.open_lerobot,
                 self._actions.save,
                 self._actions.save_as,
                 self._actions.save_auto,
@@ -895,6 +904,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 actions=[
                     self._actions.open,
                     self._actions.open_dir,
+                    self._actions.open_lerobot,
                     self._actions.open_prev_img,
                     self._actions.open_next_img,
                     self._actions.save,
@@ -2489,6 +2499,50 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         if dir_path:
             self._load_from_file_or_dir(file_or_dir=dir_path)
+
+    def _open_lerobot_with_dialog(self, _value: bool = False) -> None:
+        from labelme.lerobot.dataset import LeRobotDataset
+        from labelme.lerobot.window import LeRobotWindow
+
+        defaultOpenDirPath: str
+        if self._prev_opened_dir and osp.exists(self._prev_opened_dir):
+            defaultOpenDirPath = self._prev_opened_dir
+        else:
+            defaultOpenDirPath = (
+                osp.dirname(self._image_path) if self._image_path else "."
+            )
+
+        dir_path = str(
+            QtWidgets.QFileDialog.getExistingDirectory(
+                self,
+                self.tr("%s - Open LeRobot Dataset") % __appname__,
+                defaultOpenDirPath,
+                QtWidgets.QFileDialog.ShowDirsOnly
+                | QtWidgets.QFileDialog.DontResolveSymlinks,
+            )
+        )
+        if not dir_path:
+            return
+
+        if not LeRobotDataset.is_lerobot_dataset(Path(dir_path)):
+            QMessageBox.warning(
+                self,
+                self.tr("Invalid Dataset"),
+                self.tr(
+                    "The selected folder does not appear to be a LeRobot dataset.\n"
+                    "A valid dataset must contain meta/info.json."
+                ),
+            )
+            return
+
+        self._prev_opened_dir = dir_path
+        win = LeRobotWindow(dataset_path=Path(dir_path), parent=None)
+        win.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        win.show()
+        # Store reference to prevent garbage collection
+        if not hasattr(self, "_lerobot_windows"):
+            self._lerobot_windows: list = []
+        self._lerobot_windows.append(win)
 
     @property
     def imageList(self) -> list[str]:
