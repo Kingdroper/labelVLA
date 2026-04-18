@@ -1,42 +1,45 @@
 # LabelVLA
 
-**面向 VLA 任务的标注工具**
+**An Annotation Tool for VLA Tasks**
 
-[English](README_en.md)
+[![PyPI](https://img.shields.io/pypi/v/labelvla.svg)](https://pypi.org/project/labelvla/)
+[![Python](https://img.shields.io/pypi/pyversions/labelvla.svg)](https://pypi.org/project/labelvla/)
 
-## 为什么需要 LabelVLA？
+[中文](README_ZH.md)
 
-VLA（Vision-Language-Action）是以视觉为中心的机器人操作任务范式。与传统的图像/视频标注不同，VLA 数据具有以下特点：
+## Why LabelVLA?
 
-- **多模态时序数据**：同时包含多相机视频流、机械臂关节角度序列、末端执行器位姿等
-- **以 episode 为单位**：每个 episode 是一次完整的操作过程
-- **时间维度标注**：需要在时间轴上划分语义片段（segment），而非逐帧标注
+VLA (Vision-Language-Action) is a vision-centric paradigm for robotic manipulation tasks. Unlike traditional image/video annotation, VLA data has unique characteristics:
 
-目前没有一个专门面向 VLA 数据的标注工具。LabelVLA 填补了这一空白，原生支持 LeRobot v2.1 格式数据，提供以时间轴为核心的标注界面。
+- **Multi-modal time-series data**: includes multi-camera video streams, robot joint angle sequences, end-effector poses, and more
+- **Episode-based organization**: each episode represents a complete manipulation procedure
+- **Temporal annotation**: requires segmenting the timeline into semantic segments rather than frame-by-frame labeling
 
-## 功能特性
+There is currently no annotation tool purpose-built for VLA data. LabelVLA fills this gap with native support for the LeRobot v2.1 format and a timeline-centric annotation interface.
 
-- **LeRobot v2.1 格式原生支持** — 直接读取 parquet + mp4 数据，无需格式转换
-- **多相机视图** — 同时显示头部相机（大画面）和左右腕部相机（侧边小画面）
-- **关节角度曲线可视化** — 绘制所有关节角度随时间变化的曲线，支持按关节名称勾选/取消显示
-- **时间轴 Segment 标注** — 在时间轴上划分片段，每个片段标注文本描述
-- **目标框标注** — 在头部相机画面上画矩形框，框自动应用到同一 segment 的所有帧
-- **运动物体追踪** — 对 segment 内位置变化的物体，通过在不同帧点击设置关键点，系统自动插值生成运动轨迹
-- **标注结果持久化** — 以 JSON 格式保存到数据集目录下的 `segments/` 文件夹
+## Features
 
-## 支持的数据格式
+- **Native LeRobot v2.1 format support** — directly reads parquet + mp4 data with no format conversion
+- **Multi-camera view** — simultaneously displays head camera (large) and left/right wrist cameras (side panels)
+- **Joint angle curve visualization** — plots all joint angles over time with per-joint toggle checkboxes
+- **Timeline segment annotation** — divide the timeline into segments, each with a text description
+- **BBox annotation** — draw bounding boxes on the head camera view; boxes automatically propagate to all frames within the same segment
+- **Moving object tracking** — for objects that move within a segment, click on different frames to set keypoints; the system interpolates the motion path automatically
+- **Persistent annotations** — saved as JSON files in the `segments/` folder under the dataset directory
 
-LabelVLA 支持标准的 [LeRobot v2.1](https://github.com/huggingface/lerobot) 目录结构：
+## Supported Data Format
+
+LabelVLA supports the standard [LeRobot v2.1](https://github.com/huggingface/lerobot) directory structure:
 
 ```
 dataset_folder/
 ├── meta/
-│   ├── info.json            # 数据集元信息（fps、特征定义、相机列表等）
-│   ├── episodes.jsonl       # 每个 episode 的帧数
-│   └── tasks.jsonl          # 任务描述
+│   ├── info.json            # Dataset metadata (fps, features, camera list, etc.)
+│   ├── episodes.jsonl       # Frame count per episode
+│   └── tasks.jsonl          # Task descriptions
 ├── data/
 │   └── chunk-000/
-│       ├── episode_000000.parquet   # 关节角度、速度、动作等时序数据
+│       ├── episode_000000.parquet   # Joint angles, velocity, actions, etc.
 │       ├── episode_000001.parquet
 │       └── ...
 └── videos/
@@ -50,117 +53,117 @@ dataset_folder/
             └── ...
 ```
 
-## 安装
+## Installation
 
-### 通过 pip 安装
+### Via pip
 
 ```bash
 pip install labelvla
 
-# 启动
+# Launch
 labelvla
 ```
 
-### 从源码安装
+### From source
 
 ```bash
 git clone https://github.com/Kingdroper/labelVLA.git
 cd labelVLA
 
-# 使用 uv（推荐）
+# Using uv (recommended)
 uv sync
 uv run labelvla
 
-# 或使用 pip
+# Or using pip
 pip install -e .
 labelvla
 ```
 
-### 依赖项
+### Dependencies
 
 - Python >= 3.10
 - PyQt5
 - OpenCV (`opencv-python`)
 - pandas + pyarrow
 - matplotlib
-- 其他依赖详见 `pyproject.toml`
+- See `pyproject.toml` for the full list
 
-## 快速上手
+## Quick Start
 
-### 第一步：启动程序
+### Step 1: Launch the application
 
 ```bash
 labelvla
-# 或
+# or
 uv run labelvla
 ```
 
-### 第二步：打开 LeRobot 数据集
+### Step 2: Open a LeRobot dataset
 
-在工具栏或 **File** 菜单中点击 **LeRobot** 按钮，选择数据集文件夹（包含 `meta/info.json` 的目录）。
+Click the **LeRobot** button in the toolbar or **File** menu, then select the dataset folder (the directory containing `meta/info.json`).
 
-### 第三步：浏览数据
+### Step 3: Browse data
 
-打开后进入 LeRobot 标注窗口：
+The LeRobot annotation window opens:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│ Episode: [下拉选择 ▼]                    [Save]  │
+│ Episode: [dropdown ▼]                    [Save]  │
 ├─────────────────────────────────────────────────┤
-│  关节角度曲线（支持勾选显示的关节）               │
-│  点击曲线可跳转到对应帧                           │
+│  Joint angle curves (toggle individual joints)   │
+│  Click on curves to jump to that frame           │
 ├─────────────────────────────────────────────────┤
-│  ┌──────────────────┐  ┌─────────┐              │
-│  │   头部相机（大）   │  │ 左腕相机 │              │
-│  │   可画标注框       │  ├─────────┤              │
-│  │                    │  │ 右腕相机 │              │
-│  └──────────────────┘  └─────────┘              │
+│  ┌──────────────────┐  ┌───────────┐            │
+│  │  Head camera      │  │ L. wrist  │            │
+│  │  (large, bbox     │  ├───────────┤            │
+│  │   drawing here)   │  │ R. wrist  │            │
+│  └──────────────────┘  └───────────┘            │
 ├─────────────────────────────────────────────────┤
-│  [seg1][    seg2    ][seg3]   时间轴             │
+│  [seg1][    seg2    ][seg3]   timeline            │
 │  [<] ═══════════════════════════════ [>] 42/949  │
 └─────────────────────────────────────────────────┘
 ```
 
-- **切换帧**：拖动时间轴滑块，或按键盘 `←` `→`
-- **切换 episode**：使用顶部下拉框
-- **关节曲线**：点击 "Joints ▼" 展开关节选择面板，勾选需要显示的关节
+- **Scrub frames**: drag the timeline slider or press `←` `→`
+- **Switch episodes**: use the top dropdown
+- **Joint curves**: click "Joints ▼" to expand the joint selection panel and toggle visibility
 
-### 第四步：创建 Segment
+### Step 4: Create segments
 
-在右侧 Segments 面板：
+In the right-side Segments panel:
 
-- 点击 **"+ Add"**：手动输入起始帧、结束帧和文本描述
-- 点击 **"+ At Current"**：以当前帧为起始帧快速创建
+- Click **"+ Add"**: manually enter start frame, end frame, and text description
+- Click **"+ At Current"**: quickly create a segment starting at the current frame
 
-Segment 会在时间轴和关节曲线上以彩色色块显示。
+Segments appear as colored blocks on the timeline and joint curve plot.
 
-### 第五步：标注目标框
+### Step 5: Annotate bounding boxes
 
-1. 将时间轴拖到 segment 范围内的某一帧
-2. 在头部相机大画面上**鼠标左键拖拽**画矩形框
-3. 在弹出框中输入类别名称
-4. 框自动应用到该 segment 的所有帧（静态物体）
+1. Navigate to a frame within a segment
+2. **Left-click and drag** on the head camera view to draw a rectangle
+3. Enter the class name in the popup dialog
+4. The box applies to all frames in the segment (static objects)
 
-### 第六步：追踪运动物体
+### Step 6: Track moving objects
 
-对于 segment 内位置会变化的物体：
+For objects that move within a segment:
 
-1. 在右侧面板选中一个 segment，再选中其中的一个 bbox
-2. 点击 **"Track Object"** 进入追踪模式（按钮变橙色）
-3. 用时间轴切换到不同帧，在头部相机画面上**点击物体中心位置**
-4. 每次点击记录一个关键点（红点显示），相邻关键点之间自动线性插值
-5. 可以每帧点击，也可以隔多帧点击——系统会自动补全中间帧
-6. 按 **Esc** 或再次点击按钮退出追踪模式
-7. 点击 **"Clear Path"** 可清除运动轨迹
+1. In the right panel, select a segment, then select a bbox within it
+2. Click **"Track Object"** to enter tracking mode (button turns orange)
+3. Navigate to different frames and **click on the object's center** in the head camera view
+4. Each click records a keypoint (shown as a red dot); adjacent keypoints are linearly interpolated
+5. You can click on every frame, or skip frames — the system fills in the gaps
+6. Press **Esc** or click the button again to exit tracking mode
+7. Click **"Clear Path"** to remove all motion keypoints
 
-### 第七步：保存
+### Step 7: Save
 
-- 点击 **Save** 按钮或按 `Ctrl+S`
-- 切换 episode 或关闭窗口时自动保存
+- Click the **Save** button or press `Ctrl+S`
+- Annotations are auto-saved when switching episodes or closing the window
 
-## 标注输出格式
+## Annotation Output Format
 
-标注结果保存在 `{数据集目录}/segments/episode_NNNNNN.json`：
+Annotations are saved to `{dataset_dir}/segments/episode_NNNNNN.json`:
 
 ```json
 {
@@ -169,7 +172,7 @@ Segment 会在时间轴和关节曲线上以彩色色块显示。
     {
       "start_frame": 0,
       "end_frame": 120,
-      "text": "伸手抓取骨牌",
+      "text": "reach for domino",
       "bboxes": [
         {
           "x": 100.0,
@@ -194,7 +197,7 @@ Segment 会在时间轴和关节曲线上以彩色色块显示。
             {"frame": 0, "cx": 320.0, "cy": 170.0},
             {"frame": 1, "cx": 317.2, "cy": 170.8},
             {"frame": 2, "cx": 314.3, "cy": 171.7},
-            "... (每一帧一个条目，共 121 条)",
+            "... (one entry per frame, 121 total)",
             {"frame": 120, "cx": 120.0, "cy": 210.0}
           ]
         }
@@ -204,28 +207,28 @@ Segment 会在时间轴和关节曲线上以彩色色块显示。
 }
 ```
 
-字段说明：
+Field reference:
 
-| 字段 | 说明 |
-|------|------|
-| `start_frame` / `end_frame` | segment 的起止帧号 |
-| `text` | segment 的文本描述 |
-| `bboxes[].x/y/width/height` | 矩形框的原始位置和大小 |
-| `bboxes[].label` | 目标类别 |
-| `bboxes[].keypoints` | 运动关键点列表（空 = 静态物体） |
-| `keypoints[].frame` | 关键帧帧号 |
-| `keypoints[].cx/cy` | 该帧框中心坐标 |
-| `bboxes[].interpolated_centers` | 插值后每帧的框中心坐标（仅运动物体，可直接读取无需重新计算） |
+| Field | Description |
+|-------|-------------|
+| `start_frame` / `end_frame` | Start and end frame indices of the segment |
+| `text` | Text description of the segment |
+| `bboxes[].x/y/width/height` | Original position and size of the bounding box |
+| `bboxes[].label` | Object class name |
+| `bboxes[].keypoints` | Motion keypoint list (empty = static object) |
+| `keypoints[].frame` | Keyframe index |
+| `keypoints[].cx/cy` | Box center coordinates at this frame |
+| `bboxes[].interpolated_centers` | Pre-computed per-frame box center coordinates (moving objects only, ready to use without re-interpolation) |
 
-## 快捷键
+## Keyboard Shortcuts
 
-| 快捷键 | 功能 |
-|--------|------|
-| `←` / `→` | 前一帧 / 后一帧 |
-| `Ctrl+S` | 保存标注 |
-| `Ctrl+W` | 关闭窗口 |
-| `Esc` | 退出追踪模式 |
+| Shortcut | Action |
+|----------|--------|
+| `←` / `→` | Previous / next frame |
+| `Ctrl+S` | Save annotations |
+| `Ctrl+W` | Close window |
+| `Esc` | Exit tracking mode |
 
-## 致谢
+## Acknowledgements
 
-LabelVLA 基于 [labelme](https://github.com/wkentaro/labelme) 构建，感谢 labelme 项目提供的基础框架。
+LabelVLA is built on top of [labelme](https://github.com/wkentaro/labelme). We thank the labelme project for providing the foundational framework.
