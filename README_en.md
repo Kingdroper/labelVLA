@@ -178,6 +178,13 @@ Annotations are saved to `{dataset_dir}/segments/episode_NNNNNN.json`:
             {"frame": 0, "cx": 320.0, "cy": 170.0},
             {"frame": 60, "cx": 150.0, "cy": 220.0},
             {"frame": 120, "cx": 120.0, "cy": 210.0}
+          ],
+          "interpolated_centers": [
+            {"frame": 0, "cx": 320.0, "cy": 170.0},
+            {"frame": 1, "cx": 317.2, "cy": 170.8},
+            {"frame": 2, "cx": 314.3, "cy": 171.7},
+            "... (one entry per frame, 121 total)",
+            {"frame": 120, "cx": 120.0, "cy": 210.0}
           ]
         }
       ]
@@ -197,6 +204,7 @@ Field reference:
 | `bboxes[].keypoints` | Motion keypoint list (empty = static object) |
 | `keypoints[].frame` | Keyframe index |
 | `keypoints[].cx/cy` | Box center coordinates at this frame |
+| `bboxes[].interpolated_centers` | Pre-computed per-frame box center coordinates (moving objects only, ready to use without re-interpolation) |
 
 ## Keyboard Shortcuts
 

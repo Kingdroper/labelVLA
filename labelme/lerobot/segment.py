@@ -144,15 +144,39 @@ class SegmentStore:
         return self._segments
 
     def save(self, segments: list[Segment] | None = None) -> None:
-        """Save segments to JSON file."""
+        """Save segments to JSON file.
+
+        For bboxes with keypoints, an additional ``interpolated_centers``
+        list is written containing the resolved (cx, cy) for every frame
+        in the segment so downstream consumers can read positions directly
+        without re-running interpolation.
+        """
         if segments is not None:
             self._segments = segments
 
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
+        segments_out: list[dict] = []
+        for seg in self._segments:
+            seg_dict: dict = asdict(seg)
+            for bbox_dict, bbox_obj in zip(seg_dict["bboxes"], seg.bboxes):
+                if bbox_obj.keypoints:
+                    centers: list[dict[str, float | int]] = []
+                    for f in range(seg.start_frame, seg.end_frame + 1):
+                        cx, cy = interpolate_bbox_center(
+                            bbox_obj, f, seg.start_frame, seg.end_frame
+                        )
+                        centers.append({
+                            "frame": f,
+                            "cx": round(cx, 1),
+                            "cy": round(cy, 1),
+                        })
+                    bbox_dict["interpolated_centers"] = centers
+            segments_out.append(seg_dict)
+
         data = {
             "episode_index": self._episode_idx,
-            "segments": [asdict(seg) for seg in self._segments],
+            "segments": segments_out,
         }
 
         with open(self.file_path, "w", encoding="utf-8") as f:
