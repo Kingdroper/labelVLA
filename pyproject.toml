@@ -3,8 +3,8 @@ requires = ["hatchling>=1.20.0", "hatch-vcs", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 [project]
-name = "labelme"
-description = "Image annotation with Python."
+name = "labelvla"
+description = "An annotation tool for VLA (Vision-Language-Action) tasks."
 license = { text = "GPL-3.0-only" }
 requires-python = ">=3.10"
 authors = [{ name = "Kentaro Wada", email = "www.kentaro.wada@gmail.com" }]
@@ -47,6 +47,7 @@ fragments = [{ path = "README.md" }]
 
 [tool.hatch.version]
 source = "vcs"
+fallback-version = "0.1.0"
 
 [dependency-groups]
 dev = [
@@ -69,6 +70,7 @@ dev = [
 ]
 
 [project.scripts]
+labelvla = "labelme.__main__:main"
 labelme = "labelme.__main__:main"
 
 [tool.pytest.ini_options]

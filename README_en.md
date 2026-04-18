@@ -52,19 +52,28 @@ dataset_folder/
 
 ## Installation
 
-### From source (recommended)
+### Via pip
 
 ```bash
-git clone https://github.com/your-org/labelvla.git
-cd labelvla
+pip install labelvla
+
+# Launch
+labelvla
+```
+
+### From source
+
+```bash
+git clone https://github.com/Kingdroper/labelVLA.git
+cd labelVLA
 
 # Using uv (recommended)
 uv sync
-uv run labelme
+uv run labelvla
 
 # Or using pip
 pip install -e .
-labelme
+labelvla
 ```
 
 ### Dependencies
@@ -81,7 +90,9 @@ labelme
 ### Step 1: Launch the application
 
 ```bash
-uv run labelme
+labelvla
+# or
+uv run labelvla
 ```
 
 ### Step 2: Open a LeRobot dataset

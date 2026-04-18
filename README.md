@@ -52,19 +52,28 @@ dataset_folder/
 
 ## 安装
 
-### 从源码安装（推荐）
+### 通过 pip 安装
 
 ```bash
-git clone https://github.com/your-org/labelvla.git
-cd labelvla
+pip install labelvla
+
+# 启动
+labelvla
+```
+
+### 从源码安装
+
+```bash
+git clone https://github.com/Kingdroper/labelVLA.git
+cd labelVLA
 
 # 使用 uv（推荐）
 uv sync
-uv run labelme
+uv run labelvla
 
 # 或使用 pip
 pip install -e .
-labelme
+labelvla
 ```
 
 ### 依赖项
@@ -81,7 +90,9 @@ labelme
 ### 第一步：启动程序
 
 ```bash
-uv run labelme
+labelvla
+# 或
+uv run labelvla
 ```
 
 ### 第二步：打开 LeRobot 数据集
