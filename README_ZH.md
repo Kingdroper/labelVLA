@@ -9,6 +9,7 @@
 
 <div align="center">
   <img src="assets/labelvla_ui.png" width="90%">
+  <img src="assets/labelvla_ui_0.png" width="90%">
   <p><i>LabelVLA 标注界面</i></p>
 </div>
 
