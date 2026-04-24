@@ -32,6 +32,7 @@ There is currently no annotation tool purpose-built for VLA data. LabelVLA fills
 - **BBox annotation** — draw bounding boxes on the head camera view; boxes automatically propagate to all frames within the same segment
 - **Moving object tracking** — for objects that move within a segment, click on different frames to set keypoints; the system interpolates the motion path automatically
 - **Persistent annotations** — saved as JSON files in the `segments/` folder under the dataset directory
+- **Remote annotation mode** — `labelvla_rs` launches a FastAPI + browser UI so you can annotate datasets that live on a headless server
 
 ## Supported Data Format
 
@@ -166,6 +167,26 @@ For objects that move within a segment:
 
 - Click the **Save** button or press `Ctrl+S`
 - Annotations are auto-saved when switching episodes or closing the window
+
+## Remote Annotation (`labelvla_rs`)
+
+Need to annotate a LeRobot dataset that sits on a headless server? Launch a browser-based frontend with a FastAPI backend:
+
+```bash
+# On the server (or locally):
+labelvla_rs --host 0.0.0.0 --port 8000 \
+            --dataset /path/to/lerobot_dataset   # optional pre-load
+```
+
+Then open `http://<server>:8000/` in any browser. If you skip `--dataset`, the landing page lets you enter a server-side dataset path.
+
+- **Same workflow as desktop** — the web UI mirrors every feature of the native `labelvla`: timeline segments, bbox drawing, moving-object tracking, joint curves, keyboard shortcuts (`←/→`, `Ctrl+S`, `Esc`).
+- **UE-Blueprint style** — dark, grid-backed theme that stays readable over long annotation sessions.
+- **Zero-install client** — the browser is the only requirement; no `pip install` on the annotator's machine.
+- **Works with tunnels** — point `ngrok`, `cloudflared`, or an SSH tunnel at the port to annotate from anywhere.
+- **Shared storage** — annotations are written to `{dataset}/segments/episode_NNNNNN.json` with exactly the same schema as the desktop app, so both entry points interoperate.
+
+The desktop `labelvla` command is unaffected — remote mode is purely additive.
 
 ## Annotation Output Format
 

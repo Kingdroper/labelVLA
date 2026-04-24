@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LabelVLA · Remote</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body class="grid-bg">
+    <!-- ── Welcome / open-dataset overlay ─────────────────────────── -->
+    <section id="welcome" class="welcome">
+      <div class="welcome-card">
+        <div class="welcome-title">
+          <span class="logo-dot"></span>
+          <h1>LabelVLA <span class="tag">remote</span></h1>
+        </div>
+        <p class="welcome-sub">
+          Open a LeRobot v2.1 dataset on the server's filesystem.
+        </p>
+        <div class="field">
+          <label for="dataset-path">Dataset path</label>
+          <input
+            id="dataset-path"
+            type="text"
+            placeholder="/path/to/lerobot_dataset"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <button id="open-dataset-btn" class="btn btn-primary">Open</button>
+        <p id="welcome-error" class="error-line hidden"></p>
+      </div>
+    </section>
+
+    <!-- ── Main workspace ────────────────────────────────────────── -->
+    <main id="workspace" class="workspace hidden">
+      <!-- Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="logo-dot"></span>
+          <span class="brand">LabelVLA</span>
+          <span class="tag">remote</span>
+          <span class="sep"></span>
+          <label class="inline-label">Episode</label>
+          <select id="episode-select" class="select"></select>
+          <span class="muted" id="dataset-path-display"></span>
+        </div>
+        <div class="topbar-right">
+          <button id="joints-toggle-btn" class="btn btn-ghost">
+            <span>Joints</span>
+            <svg width="10" height="10" viewBox="0 0 10 10">
+              <path d="M1 3 L5 7 L9 3" stroke="currentColor" fill="none" stroke-width="1.5"/>
+            </svg>
+          </button>
+          <button id="save-btn" class="btn btn-primary">
+            <svg width="12" height="12" viewBox="0 0 12 12">
+              <path d="M2 2 L2 10 L10 10 L10 4 L8 2 Z M4 2 L4 5 L8 5 L8 2 M4 7 L8 7 L8 9 L4 9 Z"
+                    stroke="currentColor" fill="none" stroke-width="1"/>
+            </svg>
+            Save
+          </button>
+          <span id="status-line" class="status-line"></span>
+        </div>
+      </header>
+
+      <!-- Joint curves panel -->
+      <section class="panel joint-panel" id="joint-panel">
+        <div class="panel-header">
+          <span class="panel-title">joint angles</span>
+          <span class="panel-sub" id="joint-info"></span>
+        </div>
+        <div class="joint-body">
+          <canvas id="joint-canvas"></canvas>
+        </div>
+        <div id="joint-checkboxes" class="joint-checkboxes hidden">
+          <div class="joint-checkboxes-tools">
+            <button class="btn btn-mini" id="joints-all-btn">All</button>
+            <button class="btn btn-mini" id="joints-none-btn">None</button>
+          </div>
+          <div class="joint-checkboxes-list" id="joint-checkboxes-list"></div>
+        </div>
+      </section>
+
+      <!-- Camera + right dock row -->
+      <section class="camera-row">
+        <div class="panel camera-main">
+          <div class="panel-header">
+            <span class="panel-title" id="head-camera-label">head camera</span>
+            <span class="panel-sub" id="head-camera-hint">
+              drag to draw a bbox · click to track
+            </span>
+          </div>
+          <div class="camera-viewport" id="head-viewport">
+            <img id="head-image" alt="head camera" />
+            <canvas id="head-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="camera-side">
+          <div class="panel camera-small">
+            <div class="panel-header">
+              <span class="panel-title" id="left-wrist-label">left wrist</span>
+            </div>
+            <div class="camera-viewport small">
+              <img id="left-wrist-image" alt="left wrist" />
+            </div>
+          </div>
+          <div class="panel camera-small">
+            <div class="panel-header">
+              <span class="panel-title" id="right-wrist-label">right wrist</span>
+            </div>
+            <div class="camera-viewport small">
+              <img id="right-wrist-image" alt="right wrist" />
+            </div>
+          </div>
+        </div>
+
+        <div class="dock" id="dock">
+          <div class="panel dock-panel">
+            <div class="panel-header">
+              <span class="panel-title">segments</span>
+              <div class="panel-tools">
+                <button class="btn btn-mini" id="add-segment-btn">+ Add</button>
+                <button class="btn btn-mini" id="add-segment-here-btn">
+                  + At Current
+                </button>
+              </div>
+            </div>
+            <ul class="dock-list" id="segment-list"></ul>
+          </div>
+
+          <div class="panel dock-panel">
+            <div class="panel-header">
+              <span class="panel-title">bboxes</span>
+              <div class="panel-tools">
+                <button class="btn btn-mini btn-orange" id="track-btn" disabled>
+                  Track Object
+                </button>
+                <button class="btn btn-mini" id="clear-path-btn" disabled>
+                  Clear Path
+                </button>
+                <button class="btn btn-mini btn-danger" id="delete-bbox-btn" disabled>
+                  Delete
+                </button>
+              </div>
+            </div>
+            <ul class="dock-list" id="bbox-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section class="panel timeline-panel">
+        <div class="panel-header">
+          <span class="panel-title">timeline</span>
+          <span class="panel-sub" id="timeline-info"></span>
+        </div>
+        <div class="timeline-body">
+          <button class="btn btn-nav" id="prev-frame-btn">‹</button>
+          <div class="timeline-wrap">
+            <canvas id="segment-bar"></canvas>
+            <input
+              id="frame-slider"
+              type="range"
+              min="0"
+              max="0"
+              value="0"
+              step="1"
+            />
+          </div>
+          <button class="btn btn-nav" id="next-frame-btn">›</button>
+          <span class="frame-counter" id="frame-counter">0 / 0</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Edit segment dialog ─────────────────────────────────────── -->
+    <div id="segment-dialog" class="dialog-overlay hidden">
+      <div class="dialog">
+        <h3 id="segment-dialog-title">Add Segment</h3>
+        <div class="field-row">
+          <label>Start frame</label>
+          <input id="seg-start" type="number" min="0" />
+        </div>
+        <div class="field-row">
+          <label>End frame</label>
+          <input id="seg-end" type="number" min="0" />
+        </div>
+        <div class="field-row">
+          <label>Text</label>
+          <input id="seg-text" type="text" placeholder="Segment description..." />
+        </div>
+        <div class="dialog-actions">
+          <button class="btn" id="seg-cancel-btn">Cancel</button>
+          <button class="btn btn-primary" id="seg-confirm-btn">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Label prompt dialog ─────────────────────────────────────── -->
+    <div id="label-dialog" class="dialog-overlay hidden">
+      <div class="dialog">
+        <h3>BBox Label</h3>
+        <div class="field-row">
+          <label>Class</label>
+          <input id="label-input" type="text" placeholder="e.g. gripper" />
+        </div>
+        <div class="dialog-actions">
+          <button class="btn" id="label-cancel-btn">Cancel</button>
+          <button class="btn btn-primary" id="label-confirm-btn">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

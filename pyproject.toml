@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
+  "fastapi>=0.100.0",
   "imgviz>=2.0.0",
   "loguru",
   "matplotlib",
@@ -38,6 +39,7 @@ dependencies = [
   "pyyaml",
   "scikit-image",
   "tifffile",
+  "uvicorn>=0.20.0",
 ]
 dynamic = ["readme", "version"]
 
@@ -75,6 +77,7 @@ dev = [
 [project.scripts]
 labelvla = "labelme.__main__:main"
 labelme = "labelme.__main__:main"
+labelvla_rs = "labelme.lerobot_server.__main__:main"
 
 [tool.pytest.ini_options]
 qt_api = "pyqt5"
