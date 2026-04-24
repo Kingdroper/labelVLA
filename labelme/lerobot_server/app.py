@@ -25,10 +25,17 @@ class _ServerState:
 
     dataset: LeRobotDataset | None
     _lock: Lock
+    # Serialize cv2.VideoCapture access. OpenCV's ffmpeg backend is not
+    # thread-safe: concurrent set()/read() from uvicorn's threadpool trips
+    # "Assertion fctx->async_lock failed" in libavcodec/pthread_frame.c.
+    # One global lock is enough — frame decode is ~10–50 ms each and
+    # sequential throughput (tens of fps) is plenty for interactive seek.
+    video_lock: Lock
 
     def __init__(self) -> None:
         self.dataset = None
         self._lock = Lock()
+        self.video_lock = Lock()
 
     def set_dataset(self, path: Path) -> LeRobotDataset:
         with self._lock:
@@ -141,7 +148,8 @@ def create_app(initial_dataset: Path | None = None) -> FastAPI:
                 404, f"Unknown camera: {camera}. Available: {ds.camera_keys}"
             )
         try:
-            img = ds.extract_frame(episode_idx, camera, frame_idx)
+            with state.video_lock:
+                img = ds.extract_frame(episode_idx, camera, frame_idx)
         except Exception as e:  # noqa: BLE001
             raise HTTPException(404, str(e)) from e
         ok, buf = cv2.imencode(
