@@ -142,7 +142,7 @@ body {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 42px 200px 1fr 56px;
+  grid-template-rows: 42px 200px 1fr 84px;
   grid-template-areas:
     "top"
     "joints"
