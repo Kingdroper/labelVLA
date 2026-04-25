@@ -30,12 +30,18 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 13px;
-  overflow: hidden;
+}
+html { height: 100%; overflow: hidden; }
+body {
+  /* Fixed-size workspace: scroll the body if the browser is smaller. */
+  min-width: 1440px;
+  min-height: 820px;
+  height: 100%;
+  overflow: auto;
 }
 
 /* Faint blueprint grid background */
@@ -128,12 +134,15 @@ html, body {
 }
 
 /* ── Workspace grid ────────────────────────────────────────────── */
+/* Fixed dimensions — bbox/image math doesn't depend on viewport size,
+   so the head canvas overlay always lines up with the image. */
 .workspace {
-  height: 100vh;
-  width: 100vw;
+  width: 1440px;
+  height: 820px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 42px minmax(120px, 22vh) minmax(0, 1fr) auto;
+  grid-template-rows: 42px 200px 1fr 56px;
   grid-template-areas:
     "top"
     "joints"
