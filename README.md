@@ -10,7 +10,9 @@
 <div align="center">
   <img src="assets/labelvla_ui.png" width="90%">
   <img src="assets/labelvla_ui_0.png" width="90%">
-  <p><i>LabelVLA annotation interface</i></p>
+  <p><i>LabelVLA desktop annotation interface</i></p>
+  <img src="assets/labelvla_rs_ui.png" width="90%">
+  <p><i>LabelVLA remote (browser) annotation interface — UE-blueprint dark theme</i></p>
 </div>
 
 ## Why LabelVLA?
@@ -255,6 +257,23 @@ Field reference:
 | `Ctrl+S` | Save annotations |
 | `Ctrl+W` | Close window |
 | `Esc` | Exit tracking mode |
+
+## Changelog
+
+### v0.2.0 (2026-04-25)
+
+- **NEW**: `labelvla_rs` — remote annotation server. Boots a FastAPI backend + browser SPA so you can annotate LeRobot datasets that live on a headless server. Same workflow as the desktop app (timeline segments, bbox drawing, moving-object tracking, joint curves, keyboard shortcuts), exposed over HTTP. UI uses a UE-blueprint-inspired dark theme.
+- Annotations written by the remote server share the exact same `{dataset}/segments/episode_NNNNNN.json` schema as the desktop app, so both entry points interoperate.
+- Internal: serialize OpenCV `VideoCapture` access to avoid an ffmpeg threading assertion under uvicorn's threadpool.
+- Internal: package metadata lookup now resolves the new `labelvla` distribution name (fixes a crash on fresh `pip install labelvla` introduced in v0.1.x).
+
+### v0.1.1 (2026-04-19)
+
+- Each bbox now carries a unique `id` that stays consistent across frames within its segment (both static and moving bboxes).
+
+### v0.1.0 (2026-04-18)
+
+- Initial public release. Native LeRobot v2.1 support, multi-camera view, joint-angle curves, timeline segment annotation, bbox annotation with motion keypoint tracking, JSON persistence.
 
 ## Acknowledgements
 

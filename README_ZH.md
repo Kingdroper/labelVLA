@@ -10,7 +10,9 @@
 <div align="center">
   <img src="assets/labelvla_ui.png" width="90%">
   <img src="assets/labelvla_ui_0.png" width="90%">
-  <p><i>LabelVLA 标注界面</i></p>
+  <p><i>LabelVLA 桌面端标注界面</i></p>
+  <img src="assets/labelvla_rs_ui.png" width="90%">
+  <p><i>LabelVLA 远程（浏览器）标注界面 — UE 蓝图暗色风格</i></p>
 </div>
 
 ## 为什么需要 LabelVLA？
@@ -255,6 +257,23 @@ labelvla_rs --host 0.0.0.0 --port 8000 \
 | `Ctrl+S` | 保存标注 |
 | `Ctrl+W` | 关闭窗口 |
 | `Esc` | 退出追踪模式 |
+
+## 更新日志
+
+### v0.2.0（2026-04-25）
+
+- **新增**：`labelvla_rs` 远程标注服务。FastAPI 后端 + 浏览器单页前端，可以直接在无显示设备的服务器上标注 LeRobot 数据集；功能完全对齐桌面端（时间轴 segment、bbox 画框、运动物体追踪、关节曲线、快捷键），通过 HTTP 提供。前端 UI 采用 UE 蓝图风格暗色主题。
+- 远程模式写入的标注与桌面端共用 `{数据集}/segments/episode_NNNNNN.json` 格式，两个入口完全互通。
+- 内部修复：在 uvicorn 的线程池下串行化 OpenCV `VideoCapture` 访问，避免 ffmpeg 线程帧解码断言崩溃。
+- 内部修复：包元数据查询改用新的 `labelvla` 名（修复 v0.1.x 全新 `pip install labelvla` 后启动崩溃）。
+
+### v0.1.1（2026-04-19）
+
+- 每个 bbox 现在带一个稳定的 `id`，同一 segment 内跨帧保持一致（静态和运动 bbox 都适用）。
+
+### v0.1.0（2026-04-18）
+
+- 首次公开发布。原生支持 LeRobot v2.1、多相机视图、关节曲线、时间轴 segment 标注、bbox 标注 + 运动关键点插值追踪、JSON 持久化。
 
 ## 致谢
 
