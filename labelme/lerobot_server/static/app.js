@@ -708,7 +708,7 @@ function drawBBox(ctx, rect, x, y, w, h, bbox, selected) {
   ctx.stroke();
 
   // Label
-  const tag = `[${bbox.id}] ${bbox.label}` +
+  const tag = `[${displayId(bbox.id)}] ${bbox.label}` +
     (moving ? " · moving" : "") +
     (app.tracking_mode && selected ? " · tracking" : "");
   ctx.font = "11px ui-monospace, Menlo, monospace";
@@ -752,6 +752,10 @@ let _pendingCounter = 0;
 function pendingId() {
   _pendingCounter += 1;
   return `_pending_${Date.now()}_${_pendingCounter}`;
+}
+
+function displayId(id) {
+  return typeof id === "number" ? String(id) : "new";
 }
 
 function imgToCanvas(x, y, rect) {
@@ -957,7 +961,7 @@ function renderBBoxList() {
       const chip = document.createElement("span");
       chip.className = "chip";
       if (b.keypoints && b.keypoints.length > 0) chip.classList.add("moving");
-      chip.textContent = `id:${b.id}`;
+      chip.textContent = `id:${displayId(b.id)}`;
       const title = document.createElement("span");
       title.className = "title";
       title.textContent = b.label;
