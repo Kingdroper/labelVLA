@@ -105,21 +105,29 @@ class SegmentListWidget(QtWidgets.QWidget):
         self._list_widget.currentRowChanged.connect(self._on_seg_row_changed)
         layout.addWidget(self._list_widget)
 
-        btn_layout = QtWidgets.QHBoxLayout()
+        # Two rows so each button stays readable in a narrow dock.
+        add_row = QtWidgets.QHBoxLayout()
         add_btn = QtWidgets.QPushButton("+ Add")
         add_btn.clicked.connect(self._add_segment)
         add_at_current_btn = QtWidgets.QPushButton("+ At Current")
         add_at_current_btn.setToolTip("Add segment starting at current frame")
         add_at_current_btn.clicked.connect(self._add_segment_at_current)
+        add_row.addWidget(add_btn)
+        add_row.addWidget(add_at_current_btn)
+        layout.addLayout(add_row)
+
+        edit_row = QtWidgets.QHBoxLayout()
         edit_btn = QtWidgets.QPushButton("Edit")
         edit_btn.clicked.connect(self._edit_segment)
         delete_btn = QtWidgets.QPushButton("Delete")
+        delete_btn.setStyleSheet(
+            "QPushButton { color: #c0392b; font-weight: bold; }"
+        )
+        delete_btn.setToolTip("Delete the selected segment (and its bboxes)")
         delete_btn.clicked.connect(self._delete_segment)
-        btn_layout.addWidget(add_btn)
-        btn_layout.addWidget(add_at_current_btn)
-        btn_layout.addWidget(edit_btn)
-        btn_layout.addWidget(delete_btn)
-        layout.addLayout(btn_layout)
+        edit_row.addWidget(edit_btn)
+        edit_row.addWidget(delete_btn)
+        layout.addLayout(edit_row)
 
         # === BBox section (for the selected segment) ===
         bbox_title = QtWidgets.QLabel("BBoxes in Segment")
@@ -344,11 +352,24 @@ class SegmentListWidget(QtWidgets.QWidget):
         row = self._list_widget.currentRow()
         if row < 0 or row >= len(self._segments):
             return
+        seg = self._segments[row]
+        bbox_count = len(seg.bboxes)
+        text = seg.text or "(no text)"
+        summary = (
+            f"Delete segment #{row + 1}?\n\n"
+            f"[{seg.start_frame}–{seg.end_frame}] \"{text}\""
+        )
+        if bbox_count:
+            summary += (
+                f"\n\nThis will also remove {bbox_count} "
+                f"bbox{'' if bbox_count == 1 else 'es'} in the segment."
+            )
         reply = QtWidgets.QMessageBox.question(
             self,
             "Delete Segment",
-            f"Delete segment #{row + 1}?",
+            summary,
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No,
         )
         if reply == QtWidgets.QMessageBox.Yes:
             # Stop tracking if tracking a bbox in this segment

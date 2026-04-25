@@ -249,6 +249,14 @@ function wireWorkspace() {
   document
     .getElementById("add-segment-here-btn")
     .addEventListener("click", () => onAddSegment(true));
+  document
+    .getElementById("edit-segment-btn")
+    .addEventListener("click", () => {
+      if (app.selected_segment_idx >= 0) editSegment(app.selected_segment_idx);
+    });
+  document
+    .getElementById("delete-segment-btn")
+    .addEventListener("click", deleteSelectedSegment);
 
   document.getElementById("track-btn").addEventListener("click", toggleTracking);
   document.getElementById("clear-path-btn").addEventListener("click", clearPath);
@@ -916,19 +924,10 @@ function renderSegmentList() {
       seek(s.start_frame);
     });
     li.addEventListener("dblclick", () => editSegment(i));
-    // Right-click to delete
     li.addEventListener("contextmenu", (e) => {
       e.preventDefault();
-      if (confirm(`Delete segment ${i}?`)) {
-        app.segments.splice(i, 1);
-        if (app.selected_segment_idx === i) setSelectedSegment(-1);
-        markDirty();
-        renderSegmentList();
-        renderBBoxList();
-        drawSegmentBar();
-        drawJointCanvas();
-        drawHeadCanvas();
-      }
+      setSelectedSegment(i);
+      deleteSegmentAt(i);
     });
     ul.appendChild(li);
   });
@@ -940,6 +939,47 @@ function renderSegmentList() {
     li.textContent = "no segments";
     ul.appendChild(li);
   }
+  updateSegmentButtons();
+}
+
+function updateSegmentButtons() {
+  const has = app.selected_segment_idx >= 0
+    && app.selected_segment_idx < app.segments.length;
+  document.getElementById("edit-segment-btn").disabled = !has;
+  document.getElementById("delete-segment-btn").disabled = !has;
+}
+
+function deleteSelectedSegment() {
+  if (
+    app.selected_segment_idx < 0
+    || app.selected_segment_idx >= app.segments.length
+  ) return;
+  deleteSegmentAt(app.selected_segment_idx);
+}
+
+function deleteSegmentAt(i) {
+  if (i < 0 || i >= app.segments.length) return;
+  const s = app.segments[i];
+  const bboxCount = s.bboxes.length;
+  const summary = `[${s.start_frame}–${s.end_frame}] "${s.text || "(no text)"}"`;
+  const detail = bboxCount > 0
+    ? `\n\nThis will also remove ${bboxCount} bbox${bboxCount === 1 ? "" : "es"} in the segment.`
+    : "";
+  if (!confirm(`Delete segment ${i}?\n${summary}${detail}`)) return;
+  app.segments.splice(i, 1);
+  if (app.selected_segment_idx === i) {
+    app.selected_segment_idx = -1;
+    app.selected_bbox_id = null;
+    if (app.tracking_mode) toggleTracking();
+  } else if (app.selected_segment_idx > i) {
+    app.selected_segment_idx -= 1;
+  }
+  markDirty();
+  renderSegmentList();
+  renderBBoxList();
+  drawSegmentBar();
+  drawJointCanvas();
+  drawHeadCanvas();
 }
 
 function renderBBoxList() {
