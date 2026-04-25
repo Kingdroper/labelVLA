@@ -130,10 +130,13 @@ html, body {
 /* ── Workspace grid ────────────────────────────────────────────── */
 .workspace {
   height: 100vh;
+  width: 100vw;
   display: grid;
-  grid-template-rows: 42px minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: 42px minmax(120px, 22vh) minmax(0, 1fr) auto;
   grid-template-areas:
     "top"
+    "joints"
     "body"
     "timeline";
   overflow: hidden;
@@ -305,23 +308,24 @@ html, body {
   gap: 4px;
 }
 
-/* ── Body layout (joint / cameras) ─────────────────────────────── */
+/* ── Body layout (cameras row) ────────────────────────────────── */
 .workspace > .camera-row {
   display: grid;
   grid-area: body;
-  grid-template-columns: 1fr 240px 280px;
-  grid-template-rows: 180px 1fr;
-  grid-template-areas:
-    "joints    joints  dock"
-    "camera    side    dock";
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 240px) minmax(240px, 300px);
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "camera side dock";
   gap: 6px;
-  padding: 6px;
+  padding: 0 6px;
   min-height: 0;
 }
 
 .joint-panel {
   grid-area: joints;
   position: relative;
+  margin: 6px 6px 6px 6px;
+  min-height: 0;
+  min-width: 0;
 }
 .joint-body {
   flex: 1;
@@ -484,7 +488,7 @@ html, body {
 /* ── Timeline ──────────────────────────────────────────────────── */
 .timeline-panel {
   grid-area: timeline;
-  margin: 0 6px 6px;
+  margin: 6px 6px 6px;
 }
 .timeline-body {
   display: flex;

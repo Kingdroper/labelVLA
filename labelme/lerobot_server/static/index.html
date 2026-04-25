@@ -46,12 +46,6 @@
           <span class="muted" id="dataset-path-display"></span>
         </div>
         <div class="topbar-right">
-          <button id="joints-toggle-btn" class="btn btn-ghost">
-            <span>Joints</span>
-            <svg width="10" height="10" viewBox="0 0 10 10">
-              <path d="M1 3 L5 7 L9 3" stroke="currentColor" fill="none" stroke-width="1.5"/>
-            </svg>
-          </button>
           <button id="save-btn" class="btn btn-primary">
             <svg width="12" height="12" viewBox="0 0 12 12">
               <path d="M2 2 L2 10 L10 10 L10 4 L8 2 Z M4 2 L4 5 L8 5 L8 2 M4 7 L8 7 L8 9 L4 9 Z"
@@ -67,7 +61,15 @@
       <section class="panel joint-panel" id="joint-panel">
         <div class="panel-header">
           <span class="panel-title">joint angles</span>
-          <span class="panel-sub" id="joint-info"></span>
+          <div class="panel-tools">
+            <span class="panel-sub" id="joint-info"></span>
+            <button id="joints-toggle-btn" class="btn btn-mini">
+              Joints
+              <svg width="10" height="10" viewBox="0 0 10 10">
+                <path d="M1 3 L5 7 L9 3" stroke="currentColor" fill="none" stroke-width="1.5"/>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="joint-body">
           <canvas id="joint-canvas"></canvas>
