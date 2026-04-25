@@ -260,6 +260,11 @@ labelvla_rs --host 0.0.0.0 --port 8000 \
 
 ## 更新日志
 
+### v0.2.1（2026-04-25）
+
+- 桌面端和远程端都补齐了显眼的 segment 删除入口。桌面端把 segment 按钮拆成两行（`+ Add` / `+ At Current`、`Edit` / `Delete`），Delete 按钮加粗变红；远程端在 segments 面板 header 增加了 `Edit` 和 `Delete` 按钮（之前只有右键菜单）。两边共用同一确认对话框，显示 segment 的帧范围、文本、bbox 数量，默认聚焦在 "No" 以防误删。
+- 删除包含正在追踪的 bbox 的 segment 时会自动停止追踪模式；选中索引在删除其它 segment 后会跟随调整，避免错位。
+
 ### v0.2.0（2026-04-25）
 
 - **新增**：`labelvla_rs` 远程标注服务。FastAPI 后端 + 浏览器单页前端，可以直接在无显示设备的服务器上标注 LeRobot 数据集；功能完全对齐桌面端（时间轴 segment、bbox 画框、运动物体追踪、关节曲线、快捷键），通过 HTTP 提供。前端 UI 采用 UE 蓝图风格暗色主题。

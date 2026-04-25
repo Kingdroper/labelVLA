@@ -260,6 +260,11 @@ Field reference:
 
 ## Changelog
 
+### v0.2.1 (2026-04-25)
+
+- Discoverable segment delete in both UIs. Desktop now lays out the segment buttons in two rows (`+ Add` / `+ At Current`, `Edit` / `Delete`) so the Delete button is always readable, and styles it in red for visibility. The remote browser UI gains explicit `Edit` and `Delete` buttons in the segments panel header (previously only available via right-click). Both share the same confirmation dialog showing the segment's frame range, text, and bbox count, and default to "No" to prevent misclicks.
+- Active tracking is now correctly cancelled when the segment containing the tracked bbox is deleted; the selected-segment index is adjusted so a remaining-but-renumbered selection doesn't drift.
+
 ### v0.2.0 (2026-04-25)
 
 - **NEW**: `labelvla_rs` — remote annotation server. Boots a FastAPI backend + browser SPA so you can annotate LeRobot datasets that live on a headless server. Same workflow as the desktop app (timeline segments, bbox drawing, moving-object tracking, joint curves, keyboard shortcuts), exposed over HTTP. UI uses a UE-blueprint-inspired dark theme.
